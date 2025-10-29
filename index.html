@@ -335,7 +335,7 @@
         // 控制生成速度：电脑端稍快（200ms/个），手机端稍慢（400ms/个），避免过于密集
         const intervalTime = window.innerWidth < 768 ? 400 : 200;
         // 初始生成15个弹窗，快速填充屏幕
-        for (let i = 0; i < 350; i++) {
+        for (let i = 0; i < 15; i++) {
             setTimeout(createPopup, i * 100);
         }
         // 后续持续生成
