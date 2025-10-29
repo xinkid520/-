@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        .mac-popup {
+            position: fixed;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: flyIn 0.6s ease-out forwards;
+            max-width: 80%;
+            word-break: break-all;
+        }
+
+        .mac-title-bar {
+            height: 32px;
+            background-color: #f5f5f5;
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+        }
+
+        .window-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .window-btn {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close-btn {
+            background-color: #ff5f56;
+        }
+
+        .min-btn {
+            background-color: #ffbd2e;
+        }
+
+        .max-btn {
+            background-color: #27c93f;
+        }
+
+        .popup-content {
+            padding: 12px 20px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        /* 飞入动画 */
+        @keyframes flyInFromTop {
+            0% {
+                transform: translate(0, -200px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flyInFromBottom {
+            0% {
+                transform: translate(0, 200px);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flyInFromLeft {
+            0% {
+                transform: translate(-200px, 0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes flyInFromRight {
+            0% {
+                transform: translate(200px, 0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: translate(0, 0);
+                opacity: 1;
+            }
+        }
+
+        /* 竖屏（手机）适配 */
+        @media (orientation: portrait) {
+            .mac-popup {
+                max-width: 70%;
+                width: auto;
+                margin: 5px;
+                /* 仅留极小边距，避免贴边过紧 */
+            }
+
+            .mac-title-bar {
+                height: 28px;
+                padding: 0 8px;
+            }
+
+            .window-buttons {
+                gap: 6px;
+            }
+
+            .window-btn {
+                width: 10px;
+                height: 10px;
+            }
+
+            .popup-content {
+                padding: 8px 12px;
+                font-size: 14px;
+                line-height: 1.5;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <script>
+        const texts = [
+            '多喝水哦~',
+            '保持微笑呀',
+            '每天都要元气满满',
+            '记得吃水果',
+            '保持好心情',
+            '好好爱自己',
+            '我想你了',
+            '梦想成真',
+            '期待下一次见面',
+            '顺顺利利',
+            '早点休息',
+            '愿所有烦恼都消失',
+            '别熬夜',
+            '今天过得开心嘛',
+            '天冷了，多穿衣服',
+            '午餐要吃好呀',
+            '累了就歇一歇',
+            '今天的风很舒服呢',
+            '记得带伞呀',
+            '别给自己太大压力',
+            '你笑起来很好看',
+            '今天也要加油呀',
+            '注意保暖哦',
+            '晚风吹来很惬意',
+            '记得补充维生素',
+            '做个甜甜的梦',
+            '偶尔偷懒也没关系',
+            '路上注意安全',
+            '今天有什么开心事吗',
+            '多走动走动呀',
+            '别让自己太累啦',
+            '喜欢的歌可以多听几遍',
+            '记得吃早餐呀',
+            '今天也有想你呢',
+            '愿你被温柔对待',
+            '偶尔放松一下吧',
+            '你真的很棒呀',
+            '慢慢做，不急的',
+            '有空多晒晒太阳',
+            '今天也要好好吃饭',
+            '别着凉了呀',
+            '累了就抱抱自己',
+            '喜欢的东西可以买给自己',
+            '今天的云很可爱',
+            '记得多喝水呀',
+            '保持好心态最重要',
+            '晚上别玩手机太久',
+            '想做什么就去做吧',
+            '你值得被珍惜',
+            '雨天路滑，小心点',
+            '今天也要元气满满呀',
+            '别硬撑着，会心疼的',
+            '有空一起散步吧',
+            '愿你每天都有小确幸',
+            '别吃太多冰的哦',
+            '累了就告诉我',
+            '今天的你也在发光',
+            '记得午休一会儿',
+            '别给自己找烦恼呀',
+            '你开心我就开心',
+            '风大了，戴个帽子吧',
+            '慢慢走，风景在前方',
+            '记得涂护手霜',
+            '今天也要甜甜的',
+            '别熬夜啦，晚安',
+            '遇到困难别慌呀',
+            '多吃点蔬菜呀',
+            '今天也有努力呢',
+            '愿你每天都顺心',
+            '冷的时候多喝热水',
+            '别太累，我会担心的',
+            '有空一起看电影呀',
+            '今天的阳光很暖',
+            '记得整理好心情',
+            '你比你想象中优秀',
+            '别让坏情绪影响你',
+            '饿了就赶紧吃饭',
+            '今天也很想你呀',
+            '累了就睡一会儿',
+            '愿你每天都有新期待',
+            '走路别太快呀',
+            '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀',
+            '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀',
+            '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀',
+            '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀',
+            '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀', '今天也很想你呀',
+            '记得照顾好自己',
+            '你一笑，世界都亮了',
+            '今天也要好好生活',
+            '别给自己太多负担',
+            '天凉了，盖好被子',
+            '喜欢的事就坚持呀',
+            '记得多微笑呀',
+            '你真的很可爱',
+            '今天也辛苦了',
+            '愿你无忧无虑',
+            '别挑食哦',
+            '想你了，很想很想',
+            '今天的你也很棒',
+            '累了就停下来',
+            '有空一起吃个饭吧',
+            '阳光正好，适合开心',
+            '记得保持开心呀',
+            '你值得最好的',
+            '别让小事影响心情',
+            '今天也有在想你',
+            '睡个好觉，明天加油',
+            '别紧张，放轻松',
+            '愿你事事如意',
+            '降温了，加件衣服',
+            '别太累，注意休息',
+            '有空一起听歌呀',
+            '今天的星星很美',
+            '记得调整好状态',
+            '你比星光还耀眼'
+        ];
+
+        function createPopup() {
+            const popup = document.createElement('div');
+            popup.className = 'mac-popup';
+
+            // 1. 组装弹窗结构
+            const titleBar = document.createElement('div');
+            titleBar.className = 'mac-title-bar';
+
+            const buttons = document.createElement('div');
+            buttons.className = 'window-buttons';
+
+            const closeBtn = document.createElement('div');
+            closeBtn.className = 'window-btn close-btn';
+            const minBtn = document.createElement('div');
+            minBtn.className = 'window-btn min-btn';
+            const maxBtn = document.createElement('div');
+            maxBtn.className = 'window-btn max-btn';
+
+            buttons.appendChild(closeBtn);
+            buttons.appendChild(minBtn);
+            buttons.appendChild(maxBtn);
+            titleBar.appendChild(buttons);
+
+            const content = document.createElement('div');
+            content.className = 'popup-content';
+            const randomText = texts[Math.floor(Math.random() * texts.length)];
+            content.textContent = randomText;
+
+            const colors = [
+                'rgba(255, 99, 132, 0.8)',
+                'rgba(54, 162, 235, 0.8)',
+                'rgba(255, 206, 86, 0.8)',
+                'rgba(75, 192, 192, 0.8)',
+                'rgba(153, 102, 255, 0.8)',
+                'rgba(255, 159, 64, 0.8)'
+            ];
+            content.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+
+            popup.appendChild(titleBar);
+            popup.appendChild(content);
+
+            // 2. 先添加弹窗到页面，获取真实尺寸（确保位置计算准确）
+            document.body.appendChild(popup);
+            const popupWidth = popup.offsetWidth;
+            const popupHeight = popup.offsetHeight;
+
+            // 3. 取消留白：在整个屏幕范围内计算位置，仅留5px防止完全贴边
+            const screenWidth = window.innerWidth;
+            const screenHeight = window.innerHeight;
+            // 最大左坐标：屏幕宽度 - 弹窗宽度 - 5px（避免右侧完全贴边）
+            const maxLeft = screenWidth - popupWidth - 5;
+            // 最大上坐标：屏幕高度 - 弹窗高度 - 5px（避免底部完全贴边）
+            const maxTop = screenHeight - popupHeight - 5;
+            // 最小坐标：5px（避免左侧/顶部完全贴边）
+            const minLeft = 5;
+            const minTop = 5;
+
+            // 4. 在[最小坐标, 最大坐标]范围内随机生成位置，确保均匀分布
+            const randomLeft = minLeft + Math.random() * (maxLeft - minLeft);
+            const randomTop = minTop + Math.random() * (maxTop - minTop);
+
+            popup.style.left = `${randomLeft}px`;
+            popup.style.top = `${randomTop}px`;
+
+            // 5. 随机飞入方向
+            const directions = ['Top', 'Bottom', 'Left', 'Right'];
+            const direction = directions[Math.floor(Math.random() * directions.length)];
+            popup.style.animation = `flyInFrom${direction} 0.6s ease-out forwards`;
+        }
+
+        // 控制生成速度：电脑端稍快（200ms/个），手机端稍慢（400ms/个），避免过于密集
+        const intervalTime = window.innerWidth < 768 ? 400 : 200;
+        // 初始生成15个弹窗，快速填充屏幕
+        for (let i = 0; i < 350; i++) {
+            setTimeout(createPopup, i * 100);
+        }
+        // 后续持续生成
+        setInterval(createPopup, intervalTime);
+    </script>
+</body>
+
+</html>
