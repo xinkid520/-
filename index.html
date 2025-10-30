@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title></title>
     <style>
         body {
             margin: 0;
@@ -19,7 +20,8 @@
             background-color: #fff;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            animation: flyIn 0.6s ease-out forwards;
+            /* 默认应用淡入动画 */
+            animation: fadeIn 0.6s ease-out forwards;
             max-width: 80%;
             word-break: break-all;
         }
@@ -61,52 +63,18 @@
             color: #333;
         }
 
-        /* 飞入动画 */
-        @keyframes flyInFromTop {
+        /* 淡入动画：仅透明度变化，配合轻微缩放增强效果 */
+        @keyframes fadeIn {
             0% {
-                transform: translate(0, -200px);
                 opacity: 0;
+                transform: scale(0.9);
+                /* 初始轻微缩小 */
             }
 
             100% {
-                transform: translate(0, 0);
                 opacity: 1;
-            }
-        }
-
-        @keyframes flyInFromBottom {
-            0% {
-                transform: translate(0, 200px);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translate(0, 0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes flyInFromLeft {
-            0% {
-                transform: translate(-200px, 0);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translate(0, 0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes flyInFromRight {
-            0% {
-                transform: translate(200px, 0);
-                opacity: 0;
-            }
-
-            100% {
-                transform: translate(0, 0);
-                opacity: 1;
+                transform: scale(1);
+                /* 恢复原大小 */
             }
         }
 
@@ -116,7 +84,6 @@
                 max-width: 70%;
                 width: auto;
                 margin: 5px;
-                /* 仅留极小边距，避免贴边过紧 */
             }
 
             .mac-title-bar {
@@ -303,38 +270,32 @@
             popup.appendChild(titleBar);
             popup.appendChild(content);
 
-            // 2. 先添加弹窗到页面，获取真实尺寸（确保位置计算准确）
+            // 2. 先添加弹窗到页面，获取真实尺寸
             document.body.appendChild(popup);
             const popupWidth = popup.offsetWidth;
             const popupHeight = popup.offsetHeight;
 
-            // 3. 取消留白：在整个屏幕范围内计算位置，仅留5px防止完全贴边
+            // 3. 全屏均匀分布（仅留5px边距）
             const screenWidth = window.innerWidth;
             const screenHeight = window.innerHeight;
-            // 最大左坐标：屏幕宽度 - 弹窗宽度 - 5px（避免右侧完全贴边）
             const maxLeft = screenWidth - popupWidth - 5;
-            // 最大上坐标：屏幕高度 - 弹窗高度 - 5px（避免底部完全贴边）
             const maxTop = screenHeight - popupHeight - 5;
-            // 最小坐标：5px（避免左侧/顶部完全贴边）
             const minLeft = 5;
             const minTop = 5;
 
-            // 4. 在[最小坐标, 最大坐标]范围内随机生成位置，确保均匀分布
+            // 4. 随机位置
             const randomLeft = minLeft + Math.random() * (maxLeft - minLeft);
             const randomTop = minTop + Math.random() * (maxTop - minTop);
 
             popup.style.left = `${randomLeft}px`;
             popup.style.top = `${randomTop}px`;
 
-            // 5. 随机飞入方向
-            const directions = ['Top', 'Bottom', 'Left', 'Right'];
-            const direction = directions[Math.floor(Math.random() * directions.length)];
-            popup.style.animation = `flyInFrom${direction} 0.6s ease-out forwards`;
+            // 5. 应用淡入动画（CSS中已默认设置，此处无需额外操作）
         }
 
-        // 控制生成速度：电脑端稍快（200ms/个），手机端稍慢（400ms/个），避免过于密集
-        const intervalTime = window.innerWidth < 768 ? 400 : 200;
-        // 初始生成15个弹窗，快速填充屏幕
+        // 控制生成速度
+        const intervalTime = window.innerWidth < 768 ? 500 : 300;
+        // 初始生成15个弹窗
         for (let i = 0; i < 15; i++) {
             setTimeout(createPopup, i * 100);
         }
